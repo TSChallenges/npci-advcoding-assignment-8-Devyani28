@@ -1,12 +1,16 @@
 package com.mystore.app.service;
 
-import com.mystore.app.entity.Product;
-import com.mystore.app.repositories.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.mystore.app.entity.Product;
+import com.mystore.app.repositories.ProductRepository;
 
 @Service
 public class ProductService {
@@ -50,15 +54,29 @@ public class ProductService {
     }
 
     // TODO: Method to search products by name
-
+    public List<Product> searchByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name);
+    }
 
     // TODO: Method to filter products by category
-
+    public List<Product> filterByCategory(String category) {
+        return productRepository.findByCategory(category);
+    }
 
     // TODO: Method to filter products by price range
-
+    public List<Product> filterByPrice(Double minPrice, Double maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice);
+    }
 
     // TODO: Method to filter products by stock quantity range
+    public List<Product> filterByStock(Integer minStock, Integer maxStock) {
+        return productRepository.findByStockQuantityBetween(minStock, maxStock);
+    }
 
+    public Page<Product> getAllProducts(int page, int pageSize, String sortBy, String sortDir) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
+        return productRepository.findAll(pageRequest);
+    }
 
 }
